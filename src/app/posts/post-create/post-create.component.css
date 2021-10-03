@@ -6,3 +6,12 @@ textarea {
 mat-card {
   margin: 1rem 0;
 }
+
+button {
+  margin-top: 1rem;
+}
+
+.my-card {
+  box-shadow: 0.25em 0.25em 0.75em rgba(0, 0, 0, 0.2),
+    -0.1em 0.125em 0.25em rgba(0, 0, 0, 0.19);
+}
