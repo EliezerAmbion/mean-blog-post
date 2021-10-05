@@ -11,3 +11,7 @@ mat-accordion {
 mat-expansion-panel-header {
   padding: 1rem 1rem 0;
 }
+
+mat-action-row {
+  padding: 0.5em;
+}
