@@ -1,6 +1,6 @@
 // this app.js file will hold the express app which is still a nodejs server side app,
 // just taking advantage of express features.
-// the use keyword simply uses a new middleware
+// the use, get and etc... keyword simply uses a new middleware.
 // NOTE: the de-facto standard language for node is sticking to vanilla javascript,
 
 const express = require("express");
@@ -32,7 +32,7 @@ app.post("/api/posts", (req, res, next) => {
   });
 }); // now you will need to connect this to angular
 
-// you can pass as many arguments in use
+// you can pass as many arguments in use or get
 // the /api/posts means only requests targeting localhost:3000/api/posts will reach this middleware.
 // all other requests will go into the void because you have no default error handler right now.
 // the important part is now we have to target this path to reach this code.
