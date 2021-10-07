@@ -5,8 +5,32 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose"); // import mongoose to connect it with the database
+
+const Post = require("./models/post");
+/*
+  Here is the Post import from the model post
+  NOTE: you can name this whatever you want BUT the convention is to use capital starting string
+  to indicate that this allows you to define a new object based on the blueprint or the schema.
+
+  now you can use this constant in your posts route to create a new post based on our body data.
+*/
 
 const app = express();
+
+// paste the connection string you copied in the connect cluster.
+// change the password you copied in mongodb ang paste it here in <password> including the <>
+mongoose
+  .connect(
+    "mongodb+srv://eli:Vd7kwC1o2f5hYEk4@cluster0.w7qev.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    console.log("Connected to database");
+  })
+  .catch(() => {
+    console.log("Connection failed");
+  });
+// it will return a promise that is why you can then and catch
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,12 +48,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// use the model you required on top here.
+
 app.post("/api/posts", (req, res, next) => {
-  const post = req.body;
-  console.log(post);
-  res.status(201).json({
-    message: "Post added successfully",
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content,
   });
+  post.save().then((createdPost) => {
+    res.status(201).json({
+      message: "Post added successfully",
+      postId: createdPost._id,
+    });
+  });
+  /*
+  and now you have a post object that's actually managed by mongoose and that's pretty close to being
+  connectable to the database. now open ng serve and npm run start:server
+  */
 }); // now you will need to connect this to angular
 
 // you can pass as many arguments in use or get
@@ -39,41 +74,26 @@ app.post("/api/posts", (req, res, next) => {
 // instead of using the send, there is another method that is the json method that
 // will return data in the json format.
 app.get("/api/posts", (req, res, next) => {
-  // you need an id here
-  const posts = [
-    {
-      id: "asdfuw234",
-      title: "this is title 1",
-      content: "this is content 1",
-    },
-    {
-      id: "qwer12334",
-      title: "this is title 2",
-      content: "this is content 2",
-    },
-    {
-      id: "zxcva132",
-      title: "this is title 3",
-      content: "this is content 3",
-    },
-    {
-      id: "ghd4123as",
-      title: "this is title 4",
-      content: "this is content 4",
-    },
-  ];
-
+  Post.find().then((documents) => {
+    res.status(200).json({
+      message: "Posts fetched successfully",
+      posts: documents,
+    });
+  });
   // now you need to return the posts here with your response
   // the status code of 200 is for success
   // Now you don't need to return the response because it's the last statement in this use function.
-  res.status(200).json({
-    message: "Posts fetched successfully",
-    posts: posts,
-  });
+
   // You shouldn't call next here because there is no next middleware you want to execute,
   // you really want to finish with sending that response and therefore you are all set
 }); // now you will need to connect this to angular
 
+app.delete("/api/posts/:id", (req, res, next) => {
+  Post.deleteOne({ _id: req.params.id }).then((result) => {
+    console.log(result);
+    res.status(200).json({ message: "Post deleted!" });
+  });
+});
 // now try this in the browser: http://localhost:3000/api/posts
 // the api/posts is what you defined.
 module.exports = app;
